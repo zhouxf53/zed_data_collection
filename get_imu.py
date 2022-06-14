@@ -50,12 +50,19 @@ def cap_image():
 def cap_imu():
     prev = 0
     while True:
-        if zed.get_sensors_data(sensors_data) == sl.ERROR_CODE.SUCCESS:
+        if zed.get_sensors_data(sensors_data, sl.TIME_REFERENCE.CURRENT) == sl.ERROR_CODE.SUCCESS:
             ts = zed.get_timestamp(sl.TIME_REFERENCE.CURRENT).get_milliseconds()
             # print("xxx ", int(ts) - int(prev))
             tmp = int(ts) - int(prev)
             print("%7.1f" % tmp)
             prev = ts
+            if ts_handler.is_new(sensors_data.get_imu_data()):
+                linear_acceleration = sensors_data.get_imu_data().get_linear_acceleration()
+                angular_velocity = sensors_data.get_imu_data().get_angular_velocity()
+                ts = zed.get_timestamp(sl.TIME_REFERENCE.CURRENT).get_milliseconds()
+                tmp = int(ts) - int(prev)
+                print("%7.1f" % tmp)
+                prev = ts
 
 
 if __name__ == '__main__':
